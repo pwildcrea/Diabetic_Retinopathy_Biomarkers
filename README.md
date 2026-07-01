@@ -1,5 +1,5 @@
 # Diabetic_Retinopathy_Biomarkers
-Investigation of diabetic retinopathy and blood-based biomarkers.
+Investigation of diabetic retinopathy and blood-based biomarkers of neurodegeneration.
 
 The primary analysis is linear regression. Ordinal regression and partial proportional odds were also done.
 
