@@ -459,60 +459,242 @@ my.render.cat <- function(x) {
   c("", sapply(stats.default(x), function(y) with(y,
                                                   sprintf("%d (%0.0f %%)", FREQ, PCT))))
 }
+# Add in p-values
+pvalue <- function(x, ...) {
+  y <- unlist(x)
+  g <- factor(rep(seq_along(x), times = sapply(x, length)))
+  if (is.numeric(y)) {
+    p <- summary(aov(y ~ g))[[1]][["Pr(>F)"]][1]
 
-table1(~ retinsadf_table1$baseline_age +
-         retinsadf_table1$race +
-         retinsadf_table1$sex +
-         retinsadf_table1$edu +
-         retinsadf_table1$yrsdiab +
-         retinsadf_table1$linking_hba1cAccordion.HBA1C +
-         retinsadf_table1$any_diab_med +
-         retinsadf_table1$cvd_hx_baseline +
-         retinsadf_table1$x2stroke +
-         retinsadf_table1$Linking_Lipids.Accordion.CHOL +
-         retinsadf_table1$Linking_Lipids.Accordion.LDL +
-         retinsadf_table1$Linking_Lipids.Accordion.HDL +
-         retinsadf_table1$Linking.otherlabs.Accordion.GFR +
-         retinsadf_table1$BMI +
-         retinsadf_table1$Linking_blodpressure.Accordion.SBP +
-         retinsadf_table1$Linking_blodpressure.Accordion.DBP +
-         retinsadf_table1$cigarett +
-         retinsadf_table1$alcohol +
-         retinsadf_table1$Linking.MIND_Accordion.RAVLT_BLR +
-         retinsadf_table1$Linking.MIND_Accordion.TOTAL_MMSE_BLR +
-         retinsadf_table1$Linking.MIND_Accordion.STROOP_BLR +
-         retinsadf_table1$Linking.MIND_Accordion.TOTAL_DSC_BLR +
-         retinsadf_table1$Linking_concomitantmedsAccordio.MEM_LOSS +
-         retinsadf_table1$Linking_concomitantmedsAccordio.ANTI_DEPRESS +
-         retinsadf_table1$ptau217 +
-         retinsadf_table1$AB4240_Ratio +
-         retinsadf_table1$NFL +
-         retinsadf_table1$linking_eye.Accordion.ETDRS0, data=retinsadf_table1, render.continuous=my.render.cont, render.categorical=my.render.cat, render.missing=NULL)
+  } else {
+    tab <- table(y, g)
 
-table1(~ retinsadf_table1$baseline_age +
-         retinsadf_table1$race +
-         retinsadf_table1$sex +
-         retinsadf_table1$edu +
-         retinsadf_table1$yrsdiab +
-         retinsadf_table1$linking_hba1cAccordion.HBA1C +
-         retinsadf_table1$any_diab_med +
-         retinsadf_table1$cvd_hx_baseline +
-         retinsadf_table1$x2stroke +
-         retinsadf_table1$Linking_Lipids.Accordion.CHOL +
-         retinsadf_table1$Linking_Lipids.Accordion.LDL +
-         retinsadf_table1$Linking_Lipids.Accordion.HDL +
-         retinsadf_table1$Linking.otherlabs.Accordion.GFR +
-         retinsadf_table1$BMI +
-         retinsadf_table1$Linking_blodpressure.Accordion.SBP +
-         retinsadf_table1$Linking_blodpressure.Accordion.DBP +
-         retinsadf_table1$cigarett +
-         retinsadf_table1$alcohol +
-         retinsadf_table1$Linking.MIND_Accordion.TOTAL_MMSE_BLR +
-         retinsadf_table1$ptau217 +
-         retinsadf_table1$AB4240_Ratio +
-         retinsadf_table1$NFL +
-         retinsadf_table1$linking_eye.Accordion.ETDRS0 | levels_NFL, data=retinsadf_table1, render.continuous=my.render.cont, render.categorical=my.render.cat, render.missing=NULL)
+    if (all(dim(tab) == c(2, 3))) {
+      p <- fisher.test(tab)$p.value
+    } else {
+      p <- suppressWarnings(chisq.test(tab)$p.value)
+    }
+  }
+  
+  c("", format.pval(p, digits = 3, eps = 0.001))
+}
 
+# Add Biomarker Levels Column
+all_merged <- cbind(all_merged, levels_NFL)
+all_merged <- cbind(all_merged, levels_ptau)
+all_merged <- cbind(all_merged, levels_Ab4240)
+# Generate Table 1
+table1 <-
+  all_merged %>%
+  select(
+    baseline_age.x,
+    race,
+    sex.x,
+    edu,
+    yrsdiab,
+    linking_hba1cAccordion.HBA1C,
+    cvd_hx_baseline.x,
+    Linking_Lipids.Accordion.CHOL,
+    Linking_Lipids.Accordion.LDL,
+    Linking_Lipids.Accordion.HDL,
+    Linking.otherlabs.Accordion.GFR,
+    BMI,
+    yrstens,
+    Linking_blodpressure.Accordion.SBP,
+    Linking_blodpressure.Accordion.DBP,
+    smokelif,
+    alcohol,
+    Linking.MIND_Accordion.RAVLT,
+    Linking.MIND_Accordion.TOTAL_MMSE,
+    Linking.MIND_Accordion.STROOP,
+    Linking.MIND_Accordion.TOTAL_DSC,
+    Linking_concomitantmedsAccordio.MEM_LOSS.x,
+    Linking_concomitantmedsAccordio.ANTI_DEPRESS.x,
+    logNFL,
+    logptau217,
+    logAb4240_Ratio
+  ) %>%
+  tbl_summary(
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    digits = all_continuous() ~ 2,
+    missing = "no"
+  ) %>%
+  bold_labels()
+
+table1
+sum(duplicated(all_merged$logAb42))
+
+# Generate NfL Table
+table1_nfl <-
+  all_merged %>%
+  select(
+    levels_NFL,
+    baseline_age.x,
+    race,
+    sex.x,
+    edu,
+    yrsdiab,
+    linking_hba1cAccordion.HBA1C,
+    cvd_hx_baseline.x,
+    Linking_Lipids.Accordion.CHOL,
+    Linking_Lipids.Accordion.LDL,
+    Linking_Lipids.Accordion.HDL,
+    Linking.otherlabs.Accordion.GFR,
+    BMI,
+    yrstens,
+    Linking_blodpressure.Accordion.SBP,
+    Linking_blodpressure.Accordion.DBP,
+    smokelif,
+    alcohol,
+    Linking.MIND_Accordion.RAVLT,
+    Linking.MIND_Accordion.TOTAL_MMSE,
+    Linking.MIND_Accordion.STROOP,
+    Linking.MIND_Accordion.TOTAL_DSC,
+    Linking_concomitantmedsAccordio.MEM_LOSS.x,
+    Linking_concomitantmedsAccordio.ANTI_DEPRESS.x,
+    logptau217,
+    logAb4240_Ratio
+  ) %>%
+  tbl_summary(
+    by = levels_NFL,
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    digits = all_continuous() ~ 2,
+    missing = "no"
+  ) %>%
+  add_p() %>%
+  bold_labels()
+
+table1_nfl
+
+# Generate pTau-217 Table
+table1_ptau <-
+  all_merged %>%
+  select(
+    levels_ptau,
+    baseline_age.x,
+    race,
+    sex.x,
+    edu,
+    yrsdiab,
+    linking_hba1cAccordion.HBA1C,
+    cvd_hx_baseline.x,
+    Linking_Lipids.Accordion.CHOL,
+    Linking_Lipids.Accordion.LDL,
+    Linking_Lipids.Accordion.HDL,
+    Linking.otherlabs.Accordion.GFR,
+    BMI,
+    yrstens,
+    Linking_blodpressure.Accordion.SBP,
+    Linking_blodpressure.Accordion.DBP,
+    smokelif,
+    alcohol,
+    Linking.MIND_Accordion.RAVLT,
+    Linking.MIND_Accordion.TOTAL_MMSE,
+    Linking.MIND_Accordion.STROOP,
+    Linking.MIND_Accordion.TOTAL_DSC,
+    Linking_concomitantmedsAccordio.MEM_LOSS.x,
+    Linking_concomitantmedsAccordio.ANTI_DEPRESS.x,
+    logNFL,
+    logAb4240_Ratio
+  ) %>%
+  tbl_summary(
+    by = levels_ptau,
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    digits = all_continuous() ~ 2,
+    missing = "no"
+  ) %>%
+  add_p() %>%
+  bold_labels()
+
+table1_ptau
+
+# Generate AB42:40 Ratio Table
+table1_ab <-
+  all_merged %>%
+  select(
+    levels_Ab4240,
+    baseline_age.x,
+    race,
+    sex.x,
+    edu,
+    yrsdiab,
+    linking_hba1cAccordion.HBA1C,
+    cvd_hx_baseline.x,
+    Linking_Lipids.Accordion.CHOL,
+    Linking_Lipids.Accordion.LDL,
+    Linking_Lipids.Accordion.HDL,
+    Linking.otherlabs.Accordion.GFR,
+    BMI,
+    yrstens,
+    Linking_blodpressure.Accordion.SBP,
+    Linking_blodpressure.Accordion.DBP,
+    smokelif,
+    alcohol,
+    Linking.MIND_Accordion.RAVLT,
+    Linking.MIND_Accordion.TOTAL_MMSE,
+    Linking.MIND_Accordion.STROOP,
+    Linking.MIND_Accordion.TOTAL_DSC,
+    Linking_concomitantmedsAccordio.MEM_LOSS.x,
+    Linking_concomitantmedsAccordio.ANTI_DEPRESS.x,
+    logptau217,
+    logNFL
+  ) %>%
+  tbl_summary(
+    by = levels_Ab4240,
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    digits = all_continuous() ~ 2,
+    missing = "no"
+  ) %>%
+  add_p() %>%
+  bold_labels()
+
+table1_ab
+
+# Export Tables
+# Table 1
+table1 %>%
+  as_flex_table() %>%
+  save_as_docx(path = "Table1.docx")
+
+table1_nfl %>%
+  as_flex_table() %>%
+  save_as_docx(path = "Table1_NFL.docx")
+
+table1_ptau %>%
+  as_flex_table() %>%
+  save_as_docx(path = "Table1_ptauL.docx")
+
+table1_ab %>%
+  as_flex_table() %>%
+  save_as_docx(path = "Table1_ab.docx")
+# Images
+table1 %>%
+  as_flex_table() %>%
+  save_as_image(path = "Table1.png")
+
+table1_nfl %>%
+  as_flex_table() %>%
+  save_as_image(path = "Table1_NFL.png")
+
+table1_ptau %>%
+  as_flex_table() %>%
+  save_as_image(path = "Table1_ptauL.png")
+
+table1_ab %>%
+  as_flex_table() %>%
+  save_as_image(path = "Table1_ab.png")
 #######################################################################################################
 
 # Table 2: Cross-Sectional Analysis of Baseline NDD Marker vs ETDRS
