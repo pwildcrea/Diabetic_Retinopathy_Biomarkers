@@ -600,326 +600,328 @@ nfl_v_plot
 # Table 4: Forest Plot
 
 #######################################################################################################
-# Subset Data for Forestploter
-fp_retin <- retinsadf_limited %>%
-  mutate(
-    sex = factor(sex, levels = c(0, 1), 
-                 labels = c("Female", "Male")),
-    cvd_hx_baseline = factor(cvd_hx_baseline, levels =c(0, 1), 
-                             labels = c("No", "Yes")),
-    edu = factor(
-      ifelse(edu %in% c(1, 2),
-             "No College",
-             "Some College or Above"),
-      levels = c("No College", "Some College or Above")),
-    cigarett = factor(cigarett, levels =c(1, 2),
-                      labels = c("Yes", "No")),
-    alcohol = factor(alcohol > 0,
-                     levels = c(TRUE, FALSE),
-                     labels = c("Yes", "No")),
-    x2stroke = factor(x2stroke, levels = c(1, 2), 
-                      labels = c("Yes", "No")),
-    any_diab_med = factor(any_diab_med, levels = c(0, 1), 
-                          labels = c("No", "Yes")),
-    age_group = ifelse(
-      baseline_age < median(baseline_age, na.rm = TRUE),
-      paste0("<", round(median(baseline_age, na.rm = TRUE), 1)),
-      paste0("≥", round(median(baseline_age, na.rm = TRUE), 1))),
-diabetes_duration = ifelse(
-      yrsdiab < median(yrsdiab, na.rm = TRUE),
-      paste0("<", round(median(yrsdiab, na.rm = TRUE), 1)),
-      paste0("≥", round(median(yrsdiab, na.rm = TRUE), 1))),
-a1c_group = ifelse(
-      linking_hba1cAccordion.HBA1C < median(linking_hba1cAccordion.HBA1C, na.rm = TRUE),
-      paste0("<", round(median(linking_hba1cAccordion.HBA1C, na.rm = TRUE), 1)),
-      paste0("≥", round(median(linking_hba1cAccordion.HBA1C, na.rm = TRUE), 1))),
-cholesterol = ifelse(
-      Linking_Lipids.Accordion.CHOL < median(Linking_Lipids.Accordion.CHOL, na.rm = TRUE),
-      paste0("<", round(median(Linking_Lipids.Accordion.CHOL, na.rm = TRUE), 1)),
-      paste0("≥", round(median(Linking_Lipids.Accordion.CHOL, na.rm = TRUE), 1))),
-LDL = ifelse(
-      Linking_Lipids.Accordion.LDL < median(Linking_Lipids.Accordion.LDL, na.rm = TRUE),
-      paste0("<", round(median(Linking_Lipids.Accordion.LDL, na.rm = TRUE), 1)),
-      paste0("≥", round(median(Linking_Lipids.Accordion.LDL, na.rm = TRUE), 1))),
-HDL = ifelse(
-      Linking_Lipids.Accordion.HDL < median(Linking_Lipids.Accordion.HDL, na.rm = TRUE),
-      paste0("<", round(median(Linking_Lipids.Accordion.HDL, na.rm = TRUE), 1)),
-      paste0("≥", round(median(Linking_Lipids.Accordion.HDL, na.rm = TRUE), 1))),
-GFR = ifelse(
-      Linking.otherlabs.Accordion.GFR < median(Linking.otherlabs.Accordion.GFR, na.rm = TRUE),
-      paste0("<", round(median(Linking.otherlabs.Accordion.GFR, na.rm = TRUE), 1)),
-      paste0("≥", round(median(Linking.otherlabs.Accordion.GFR, na.rm = TRUE), 1))),
-BMI = ifelse(
-     BMI < median(BMI, na.rm = TRUE),
-      paste0("<", round(median(BMI, na.rm = TRUE), 1)),
-      paste0("≥", round(median(BMI, na.rm = TRUE), 1))),
-SBP = ifelse(
-      Linking_blodpressure.Accordion.SBP < median(Linking_blodpressure.Accordion.SBP, na.rm = TRUE),
-      paste0("<", round(median(Linking_blodpressure.Accordion.SBP, na.rm = TRUE), 1)),
-      paste0("≥", round(median(Linking_blodpressure.Accordion.SBP, na.rm = TRUE), 1))),
-DBP = ifelse(
-      Linking_blodpressure.Accordion.DBP < median(Linking_blodpressure.Accordion.DBP, na.rm = TRUE),
-      paste0("<", round(median(Linking_blodpressure.Accordion.DBP, na.rm = TRUE), 1)),
-      paste0("≥", round(median(Linking_blodpressure.Accordion.DBP, na.rm = TRUE), 1))),
-MMSE = ifelse(
-      Linking.MIND_Accordion.TOTAL_MMSE_BLR < median(Linking.MIND_Accordion.TOTAL_MMSE_BLR, na.rm = TRUE),
-      paste0("<", round(median(Linking.MIND_Accordion.TOTAL_MMSE_BLR, na.rm = TRUE), 1)),
-      paste0("≥", round(median(Linking.MIND_Accordion.TOTAL_MMSE_BLR, na.rm = TRUE), 1))),
-TBV = ifelse(
-      TOTAL_BRAIN_VOLUME_ICV_BLR < median(TOTAL_BRAIN_VOLUME_ICV_BLR, na.rm = TRUE),
-      paste0("<", round(median(TOTAL_BRAIN_VOLUME_ICV_BLR, na.rm = TRUE), 1)),
-      paste0("≥", round(median(TOTAL_BRAIN_VOLUME_ICV_BLR, na.rm = TRUE), 1))),
-GMV = ifelse(
-      GRAY_MATTER_NORMAL_SUM_BLR < median(GRAY_MATTER_NORMAL_SUM_BLR, na.rm = TRUE),
-      paste0("<", round(median(GRAY_MATTER_NORMAL_SUM_BLR, na.rm = TRUE), 1)),
-      paste0("≥", round(median(GRAY_MATTER_NORMAL_SUM_BLR, na.rm = TRUE), 1))),
-WMV = ifelse(
-      WHITE_MATTER_NORMAL_SUM_BLR < median(WHITE_MATTER_NORMAL_SUM_BLR, na.rm = TRUE),
-      paste0("<", round(median(WHITE_MATTER_NORMAL_SUM_BLR, na.rm = TRUE), 1)),
-      paste0("≥", round(median(WHITE_MATTER_NORMAL_SUM_BLR, na.rm = TRUE), 1))),
-WMLV = ifelse(
-      WHITE_MATTER_ABNORMAL_SUM_BLR < median(WHITE_MATTER_ABNORMAL_SUM_BLR, na.rm = TRUE),
-      paste0("<", round(median(WHITE_MATTER_ABNORMAL_SUM_BLR, na.rm = TRUE), 1)),
-      paste0("≥", round(median(WHITE_MATTER_ABNORMAL_SUM_BLR, na.rm = TRUE), 1))),
-  )
+# Re-level Variables
+retinsadf_table1$sex <- relevel(retinsadf_table1$sex, ref = "Female")
+retinsadf_table1$alcohol <- relevel(retinsadf_table1$alcohol, ref = "No")
+retinsadf_table1$x2stroke <- relevel(retinsadf_table1$x2stroke, ref = "No")
+retinsadf_table1$cvd_hx_baseline <- relevel(retinsadf_table1$cvd_hx_baseline, ref = "No")
+retinsadf_table1$cigarett <- relevel(retinsadf_table1$cigarett, ref = "No")
+retinsadf_table1$any_diab_med <- relevel(retinsadf_table1$any_diab_med, ref = "No")
 
-run_subgroup <- function(data, subgroup_var, subgroup_name) {
-  
-  if (!subgroup_var %in% names(data)) {
-    stop(paste("Variable not found:", subgroup_var))
-  }
-  
-  levels_sub <- na.omit(unique(data[[subgroup_var]]))
-  
-  results <- lapply(levels_sub, function(level) {
+# Create List of Categorical Effect Modifiers
+cat_effect_modifiers <- c("sex",
+                          "edu",
+                          "race",
+                          "any_diab_med",
+                          "cigarett",
+                          "cvd_hx_baseline",
+                          "alcohol",
+                          "x2stroke"
+)
+
+# Make Categorical Effect Modifiers Factors
+retinsadf_table1 <- retinsadf_table1 %>%
+  mutate(
+    across(
+      all_of(cat_effect_modifiers),
+      as.factor
+    )
+  )
+View(retinsadf_table1)
+
+cat_forest_results <- map_dfr(
+  cat_effect_modifiers,
+  function(modifier) {
     
-    subset_data <- data %>%
-      filter(.data[[subgroup_var]] == level) %>%
+    formula <- as.formula(
+      paste(
+        "linking_eye.Accordion.ETDRS0 ~ logNFL *",
+        modifier
+      )
+    )
+    
+    model <- lm(
+      formula,
+      data = retinsadf_table1
+    )
+    
+    tidy(
+      model,
+      conf.int = TRUE
+    ) %>%
       filter(
-        !is.na(linking_eye.Accordion.ETDRS0),
-        !is.na(logNFL)
-      )
-    
-    if (nrow(subset_data) < 2) {
-      return(NULL)
-    }
-    
-    model <- lm(linking_eye.Accordion.ETDRS0 ~ logNFL,
-                data = subset_data)
-    
-    broom::tidy(model) %>%
-      filter(term == "logNFL") %>%
+        grepl("^logNFL:", term)
+      ) %>%
       mutate(
-        subgroup = subgroup_name,
-        level = as.character(level),
-        n_obs = stats::nobs(model)
+        Modifier = modifier
       )
-  })
-  
-  bind_rows(results)
-}
-
-interaction_p <- function(data, subgroup_var) {
-  
-  model_data <- data %>%
-    filter(
-      !is.na(.data[[subgroup_var]]),
-      !is.na(linking_eye.Accordion.ETDRS0),
-      !is.na(logNFL)
-    )
-  
-  if (nrow(model_data) < 3) {
-    return(NA_real_)
   }
-  
-  formula_txt <- paste(
-    "linking_eye.Accordion.ETDRS0 ~ logNFL *",
-    subgroup_var
-  )
-  
-  model <- lm(as.formula(formula_txt), data = model_data)
-  
-  pvals <- coef(summary(model))[
-    grep("logNFL:", rownames(coef(summary(model)))),
-    "Pr(>|t|)"
-  ]
-  
-  if (length(pvals) == 0) NA_real_ else pvals[1]
-}
-
-forest_data <- bind_rows(
-  run_subgroup(fp_retin, "age_group", "Age"),
-  run_subgroup(fp_retin, "sex", "Sex"),
-  run_subgroup(fp_retin, "edu", "Education"),
-  run_subgroup(fp_retin, "diabetes_duration", "Diabetes Duration"),
-  run_subgroup(fp_retin, "a1c_group", "HbA1c"),
-  run_subgroup(fp_retin, "any_diab_med", "Any T2DM Medication"),
-  run_subgroup(fp_retin, "cvd_hx_baseline", "CVD History"),
-  run_subgroup(fp_retin, "x2stroke", "Stroke History"),
-  run_subgroup(fp_retin, "cholesterol", "Total Cholesterol"),
-  run_subgroup(fp_retin, "LDL", "LDL"),
-  run_subgroup(fp_retin, "HDL", "HDL"),
-  run_subgroup(fp_retin, "GFR", "GFR"),
-  run_subgroup(fp_retin, "BMI", "BMI"),
-  run_subgroup(fp_retin, "cigarett", "Currently Smokes"),
-  run_subgroup(fp_retin, "alcohol", "Currently Drinks"),
-  run_subgroup(fp_retin, "MMSE", "MMSE"),
-  run_subgroup(fp_retin, "TBV", "TBV"),
-  run_subgroup(fp_retin, "WMV", "WMV"),
-  run_subgroup(fp_retin, "GMV", "GMV"),
-  run_subgroup(fp_retin, "WMLV", "WMLV")
 )
+cat_forest_results
 
-interaction_tbl <- tibble(
-  subgroup = c("Age",
-               "Sex",
-               "Education",
-               "Diabetes Duration",
-               "HbA1c",
-               "Any T2DM Medication",
-               "CVD History",
-               "Stroke History",
-               "Total Cholesterol",
-               "LDL",
-               "HDL",
-               "GFR",
-               "BMI",
-               "Currently Smokes",
-               "Currently Drinks",
-               "MMSE",
-               "TBV",
-               "WMV",
-               "GMV",
-               "WMLV"
-               ),
-p_interaction = c(
-    interaction_p(fp_retin, "age_group"),
-    interaction_p(fp_retin, "sex"),
-    interaction_p(fp_retin, "edu"),
-    interaction_p(fp_retin, "diabetes_duration"),
-    interaction_p(fp_retin, "a1c_group"),
-    interaction_p(fp_retin, "any_diab_med"),
-    interaction_p(fp_retin, "cvd_hx_baseline"),
-    interaction_p(fp_retin, "x2stroke"),
-    interaction_p(fp_retin, "cholesterol"),
-    interaction_p(fp_retin, "LDL"),
-    interaction_p(fp_retin, "HDL"),
-    interaction_p(fp_retin, "GFR"),
-    interaction_p(fp_retin, "BMI"),
-    interaction_p(fp_retin, "cigarett"),
-    interaction_p(fp_retin, "alcohol"),
-    interaction_p(fp_retin, "MMSE"),
-    interaction_p(fp_retin, "TBV"),
-    interaction_p(fp_retin, "WMV"),
-    interaction_p(fp_retin, "GMV"),
-    interaction_p(fp_retin, "WMLV")
-  )
-)
-
-forest_data <- forest_data %>%
-  left_join(interaction_tbl, by = "subgroup") %>%
+# Make Labels
+cat_forest_results <- cat_forest_results %>%
   mutate(
-    subgroup = factor(
-      subgroup,
-      levels = c(
-        "Age",
-        "Sex",
-        "Education",
-        "Diabetes Duration",
-        "HbA1c",
-        "Any T2DM Medication",
-        "CVD History",
-        "Stroke History",
-        "Total Cholesterol",
-        "LDL",
-        "HDL",
-        "GFR",
-        "BMI",
-        "Currently Smokes",
-        "Currently Drinks",
-        "MMSE",
-        "TBV",
-        "WMV",
-        "GMV",
-        "WMLV"
+    label = case_when(
+      term == "logNFL:sexMale" ~ "Male vs Female",
+      grepl("logNFL:eduHigh School Graduate", term) ~
+        "High School Graduate vs < High School",
+      grepl("logNFL:eduSome College", term) ~
+        "Some College vs < High School",
+      grepl("logNFL:eduCollege Degree of Higher", term) ~
+        "College Degree or Higher vs < High School",
+      grepl("logNFL:raceBlack", term) ~
+        "Black vs White",
+      grepl("logNFL:raceHispanic", term) ~
+        "Hispanic vs White",
+      grepl("logNFL:raceOther", term) ~
+        "Other vs White",
+      grepl("logNFL:any_diab_medYes", term) ~
+        "Diabetes medication: Yes vs No",
+      grepl("logNFL:cigarettYes", term) ~
+        "Smoking: Yes vs No",
+      grepl("logNFL:cvd_hx_baselineYes", term) ~
+        "CVD history: Yes vs No",
+      grepl("logNFL:alcoholYes", term) ~
+        "Alcohol: Yes vs No",
+      grepl("logNFL:x2strokeYes", term) ~
+        "Stroke: Yes vs No",
+      TRUE ~ term
+    )
+  )
+cat_forest_results
+
+# Data Formatting
+cat_plot_data <- cat_forest_results %>%
+  mutate(
+    term_factor = factor(label, levels = rev(unique(label))),
+    p_formatted = ifelse(p.value < 0.05, "<0.05", sprintf("%.3f", p.value)),
+    est_ci_text = sprintf("%.2f (%.2f, %.2f)", estimate, conf.low, conf.high)
+  )
+
+# Forest Plot 
+cat_forest_plot <- ggplot(cat_plot_data, aes(y = term_factor, x = estimate)) +
+  geom_point(shape = 18, size = 3) +  
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.25) +
+  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
+  scale_y_discrete(name = "") +
+  labs(
+    x = "Beta (95% CI)",
+    y = NULL,
+    title = "Categorical Effect Modifiers of logNfL ~ ETDRS DRSS"
+  ) +
+  theme_bw(base_size = 12) +
+  theme(
+    strip.placement = "outside", # Places modifier titles to the far left
+    strip.text.y.left = element_text(angle = 0, face = "bold"), # Keep headers horizontal
+    panel.spacing = unit(0.5, "lines"),
+    axis.text.y = element_text(size = 10)
+  )
+cat_forest_plot
+
+# Data Table
+cat_fp_table <- ggplot(cat_plot_data, aes(y = term_factor)) +
+  # Beta & 95% CI column
+  geom_text(aes(x = 1, label = est_ci_text), hjust = 0.5, size = 3.5) +
+  # P-value column
+  geom_text(aes(x = 2, label = p_formatted), hjust = 0.5, size = 3.5) +
+  # Column headers
+  annotate("text", x = 1, y = length(unique(cat_plot_data$label)) + 0.8, 
+           label = "Beta (95% CI)", fontface = "bold", size = 3.8) +
+  annotate("text", x = 2, y = length(unique(cat_plot_data$label)) + 0.8, 
+           label = "P-value", fontface = "bold", size = 3.8) +
+  scale_x_continuous(limits = c(0.5, 2.5), expand = c(0, 0)) +
+  # Match y-axis bounds precisely so rows align
+  coord_cartesian(clip = "off") +
+  theme_void() +
+  theme(
+    plot.margin = margin(t = 30, r = 10, b = 30, l = 10)
+  )
+
+# Plot Forest Plot & Table Side by Side
+cat_combined_plot <- cat_forest_plot + cat_fp_table + plot_layout(widths = c(2.5, 1))
+
+# Display plot
+cat_combined_plot
+
+# Save
+ggsave(
+  filename = "cat_nfl_forest_plot_combined.pdf",
+  plot = cat_combined_plot,
+  width = 10,       # Width in inches
+  height = 6,       # Adjust height based on number of modifier rows
+  units = "in",
+  dpi = 300
+)
+
+
+# Make List on Continuous Effect Modifiers
+cont_effect_modifiers <- c("baseline_age",
+                           "yrsdiab",
+                           "linking_hba1cAccordion.HBA1C",
+                           "Linking_blodpressure.Accordion.SBP",
+                           "BMI",
+                           "Linking_Lipids.Accordion.CHOL",
+                           "Linking.otherlabs.Accordion.GFR",
+                           "Linking_Lipids.Accordion.LDL",
+                           "Linking_Lipids.Accordion.HDL",
+                           "Linking.MIND_Accordion.TOTAL_MMSE_BLR",
+                           "TOTAL_BRAIN_VOLUME_ICV_BLR",
+                           "GRAY_MATTER_NORMAL_SUM_BLR",
+                           "WHITE_MATTER_NORMAL_SUM_BLR",
+                           "logWHITE_MATTER_ABNORMAL_SUM_BLR"
+)
+
+cont_forest_labels <- c(
+  baseline_age = "Age (yrs)",
+  yrsdiab = "Diabetes Duration (yrs)",
+  linking_hba1cAccordion.HBA1C = "Hemoglobin A1c (%)",
+  Linking_blodpressure.Accordion.SBP = "Systolic BP (mmHg)",
+  BMI = "BMI (kg/m²)",
+  Linking_Lipids.Accordion.CHOL = "Total cholesterol (mg/dL)",
+  Linking.otherlabs.Accordion.GFR = "eGFR (mL/min/1.73 m²)",
+  Linking_Lipids.Accordion.LDL = "LDL (mg/dL)",
+  Linking_Lipids.Accordion.HDL = "HDL (mg/dL)",
+  Linking.MIND_Accordion.TOTAL_MMSE_BLR = "MMSE",
+  TOTAL_BRAIN_VOLUME_ICV_BLR = "Total Brain Volume",
+  GRAY_MATTER_NORMAL_SUM_BLR = "Gray Matter Volume",
+  WHITE_MATTER_NORMAL_SUM_BLR = "White Matter Volume",
+  logWHITE_MATTER_ABNORMAL_SUM_BLR = "Abnormal White Matter Volume"
+)
+
+
+cont_forest_results <- map_dfr(
+  cont_effect_modifiers,
+  function(modifier) {
+    
+    formula <- as.formula(
+      paste(
+        "linking_eye.Accordion.ETDRS0 ~ logNFL *",
+        modifier
       )
     )
-  ) %>%
-  arrange(subgroup, level) %>%
-  group_by(subgroup) %>%
-  mutate(
-    display_subgroup = if_else(
-      row_number() == 1,
-      as.character(subgroup),
-      ""
-    ),
-    p_int_display = if_else(
-      row_number() == 1,
-      if_else(
-        is.na(p_interaction),
-        "",
-        if_else(
-          p_interaction < 0.001,
-          "<0.001",
-          sprintf("%.3f", p_interaction)
-        )
-      ),
-      ""
+    
+    model <- lm(
+      formula,
+      data = retinsadf_table1
     )
-  ) %>%
-  ungroup() %>%
+    
+    tidy(
+      model,
+      conf.int = TRUE
+    ) %>%
+      filter(
+        grepl("^logNFL:", term)
+      ) %>%
+      mutate(
+        Modifier = modifier
+      )
+  }
+)
+cont_forest_results
+# Make Labels
+retinsadf_table1$linking_hba1cAccordion.HBA1C
+retinsadf_table1$yrsdiab
+cont_forest_results <- cont_forest_results %>%
   mutate(
-    display_level = as.character(level),
-    beta_ci = sprintf(
-      "%.2f (%.2f, %.2f)",
-      estimate,
-      estimate - 1.96 * std.error,
-      estimate + 1.96 * std.error
-    ),
-    p_value_clean = if_else(
-      p.value < 0.001,
-      "<0.001",
-      sprintf("%.3f", p.value)
+    label = case_when(
+      term == "logNFL:baseline_age" ~ "Age (yrs)",
+      grepl("logNFL:linking_hba1cAccordion.HBA1C", term) ~
+        "Hemoglobin A1c (%)",
+      grepl("logNFL:yrsdiab", term) ~
+        "Diabetes Duration (yrs)",
+      grepl("logNFL:Linking_blodpressure.Accordion.SBP", term) ~
+        "Systolic BP (mmHg)",
+      grepl("logNFL:BMI", term) ~
+        "BMI (kg/m²)",
+      grepl("logNFL:Linking_Lipids.Accordion.CHOL", term) ~
+        "Total cholesterol (mg/dL)",
+      grepl("logNFL:Linking.otherlabs.Accordion.GFR", term) ~
+        "GFR (mL/min/1.73 m²)",
+      grepl("logNFL:Linking_Lipids.Accordion.LDL", term) ~
+        "LDL (mg/dL)",
+      grepl("logNFL:Linking_Lipids.Accordion.HDL", term) ~
+        "HDL (mg/dL)",
+      grepl("logNFL:Linking.MIND_Accordion.TOTAL_MMSE_BLR", term) ~
+        "MMSE",
+      grepl("logNFL:TOTAL_BRAIN_VOLUME_ICV_BLR", term) ~
+        "Total Brain Volume",
+      grepl("logNFL:GRAY_MATTER_NORMAL_SUM_BLR", term) ~
+        "Gray Matter Volume",
+      grepl("logNFL:WHITE_MATTER_NORMAL_SUM_BLR", term) ~
+        "White Matter Volume",
+      grepl("logNFL:logWHITE_MATTER_ABNORMAL_SUM_BLR", term) ~
+        "Abnormal White Matter Volume", TRUE ~ term
     )
   )
+cont_forest_results
 
-tabletext <- cbind(
-  c("Subgroup", forest_data$display_subgroup),
-  c("Level", forest_data$display_level),
-  c("N", forest_data$n_obs),
-  c("β (95% CI)", forest_data$beta_ci),
-  c("P value", forest_data$p_value_clean),
-  c("P interaction", forest_data$p_int_display)
-)
+# Data Formatting
+cont_plot_data <- cont_forest_results %>%
+  mutate(
+    term_factor = factor(label, levels = rev(unique(label))),
+    p_formatted = ifelse(p.value < 0.05, "<0.05", sprintf("%.3f", p.value)),
+    est_ci_text = sprintf("%.2f (%.2f, %.2f)", estimate, conf.low, conf.high)
+  )
 
-forestplot(
-  labeltext = tabletext,
-  mean  = c(NA, forest_data$estimate),
-  lower = c(NA, forest_data$estimate - 1.96 * forest_data$std.error),
-  upper = c(NA, forest_data$estimate + 1.96 * forest_data$std.error),
-  zero = 0,
-  boxsize = 0.20,
-  lineheight = unit(8, "mm"),
-  col = fpColors(
-    box = "black",
-    line = "black",
-    zero = "gray50"
-  ),
-  xlab = "Beta Coefficient (95% CI)",
-  txt_gp = fpTxtGp(
-    label = gpar(fontsize = 12),
-    summary = gpar(fontface = "bold", fontsize = 12), # Bolds the Subgroup headers
-    ticks = gpar(fontsize = 12),
-    xlab  = gpar(fontsize = 16),
-  ),
-  hrzl_lines = list(
-    "1" = gpar(lwd = 1.5),
-    "2" = gpar(lwd = 1)
-  ),
-  new_page = TRUE
+# Forest Plot 
+cont_forest_plot <- ggplot(cont_plot_data, aes(y = term_factor, x = estimate)) +
+  geom_point(shape = 18, size = 3) +  
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.25) +
+  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
+  scale_y_discrete(name = "") +
+  labs(
+    x = "Beta (95% CI)",
+    y = NULL,
+    title = "Continuous Effect Modifiers of logNfL ~ ETDRS DRSS"
+  ) +
+  theme_bw(base_size = 12) +
+  theme(
+    strip.placement = "outside", # Places modifier titles to the far left
+    strip.text.y.left = element_text(angle = 0, face = "bold"), # Keep headers horizontal
+    panel.spacing = unit(0.5, "lines"),
+    axis.text.y = element_text(size = 10)
+  )
+cont_forest_plot
+
+# Data Table
+cont_fp_table <- ggplot(cont_plot_data, aes(y = term_factor)) +
+  # Beta & 95% CI column
+  geom_text(aes(x = 1, label = est_ci_text), hjust = 0.5, size = 3.5) +
+  # P-value column
+  geom_text(aes(x = 2, label = p_formatted), hjust = 0.5, size = 3.5) +
+  # Column headers
+  annotate("text", x = 1, y = length(unique(cont_plot_data$label)) + 0.8, 
+           label = "Beta (95% CI)", fontface = "bold", size = 3.8) +
+  annotate("text", x = 2, y = length(unique(cont_plot_data$label)) + 0.8, 
+           label = "P-value", fontface = "bold", size = 3.8) +
+  scale_x_continuous(limits = c(0.5, 2.5), expand = c(0, 0)) +
+  # Match y-axis bounds precisely so rows align
+  coord_cartesian(clip = "off") +
+  theme_void() +
+  theme(
+    plot.margin = margin(t = 30, r = 10, b = 30, l = 10)
+  )
+
+#retinsadf_table1$GRAY_MATTER_NORMAL_SUM_BLR
+#test_model <- lm(linking_eye.Accordion.ETDRS0 ~ logNFL * GRAY_MATTER_NORMAL_SUM_BLR, data = retinsadf_table1)
+#modelsummary(test_model, statistic = "P-value: {p.value}", stars = TRUE)
+
+# Plot Forest Plot & Table Side by Side
+cont_combined_plot <- cont_forest_plot + cont_fp_table + plot_layout(widths = c(2.5, 1))
+
+# Display plot
+cont_combined_plot
+
+# Save
+ggsave(
+  filename = "cont_nfl_forest_plot_combined.pdf",
+  plot = cont_combined_plot,
+  width = 10,       # Width in inches
+  height = 6,       # Adjust height based on number of modifier rows
+  units = "in",
+  dpi = 300
 )
-hist(retinsadf_limited$linking_eye.Accordion.ETDRS0)
-retinsadf_limited |> count(linking_eye.Accordion.ETDRS8)
 
 #######################################################################################################
 
