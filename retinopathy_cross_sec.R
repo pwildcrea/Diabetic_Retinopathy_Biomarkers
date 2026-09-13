@@ -136,8 +136,9 @@ baseline_all$logptau217 <- log(baseline_all$ptau217 + 1)
 baseline_all$log_lmp_ptau_217 <- log(baseline_all$lmp_ptau_217 + 1)
 baseline_all$logNFL <- log(baseline_all$NFL + 1)
 baseline_all$logyrsdiab <- log(baseline_all$yrsdiab + 1)
-# Compute Ab4240 Ratio w/ Log Transformed Data
-baseline_all$logAb4240_Ratio <- (baseline_all$logAb42 / baseline_all$logAb40)
+# Compute Ab4240 Ratio then Log Transform It
+baseline_all$Ab4240_Ratio <- (baseline_all$Ab42 / baseline_all$Ab40)
+baseline_all$logAb4240_Ratio <- log(baseline_all$Ab4240_Ratio + 1)
 # Compute pTau-217/Ab4240 Ratio w/ Log Transformed Data
 # Arbitrary Units
 baseline_all$logpT217_AB42_Ratio <- (baseline_all$logptau217 / baseline_all$logAb42)
